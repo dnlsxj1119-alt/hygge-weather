@@ -179,6 +179,15 @@ select {
   color: white;
 }
 
+.empty-recommendation {
+  background: rgba(248, 250, 252, 0.72);
+  border: 1px solid rgba(226, 232, 240, 0.86);
+  border-radius: 8px;
+  color: rgb(71 85 105);
+  line-height: 1.7;
+  padding: 1rem;
+}
+
 .icon-badge {
   align-items: center;
   aspect-ratio: 1;

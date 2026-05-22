@@ -185,41 +185,74 @@ const CATEGORY_ICONS = {
   tip: Compass,
 };
 
-const WEATHER_PROFILES = {
+const PLACE_CATEGORY_ORDER = ['cafe', 'shop', 'walk', 'museum', 'food'];
+
+const WEATHER_COPY = {
   rain: {
-    title: '비 오는 날의 휘게',
-    tone: 'Stay dry, warm, and unhurried.',
-    categories: ['cafe', 'museum', 'shop', 'food'],
+    title: '비 오는 날의 실제 장소 추천',
+    tone: 'Stay dry, warm, and close to good indoor stops.',
+    reason: {
+      cafe: '비를 피하며 따뜻한 커피로 쉬어가기 좋습니다.',
+      shop: '실내에서 덴마크 감성의 쇼핑을 즐기기 좋습니다.',
+      walk: '비가 잦아들 때 짧게 걸으며 도시 분위기를 느끼기 좋습니다.',
+      museum: '젖지 않고 오래 머물 수 있는 실내 코스입니다.',
+      food: '축축한 날씨에 달콤하고 따뜻한 휴식이 됩니다.',
+    },
   },
   clear: {
-    title: '햇살 좋은 하루',
-    tone: 'Go outside while the light is kind.',
-    categories: ['walk', 'cafe', 'shop', 'food'],
-  },
-  cold: {
-    title: '추운 날의 온기',
-    tone: 'Choose warmth first, then choose the view.',
-    categories: ['cafe', 'museum', 'food', 'shop'],
-  },
-  wind: {
-    title: '바람 강한 날',
-    tone: 'Keep the plan close and comfortable.',
-    categories: ['cafe', 'museum', 'shop', 'food'],
+    title: '맑은 날의 실제 장소 추천',
+    tone: 'Enjoy the light, then add a cozy stop.',
+    reason: {
+      cafe: '햇살 좋은 날 산책 전후로 커피 한 잔 하기 좋습니다.',
+      shop: '밝은 오후에 가볍게 들러 둘러보기 좋은 장소입니다.',
+      walk: '맑은 날 도시 풍경을 가장 잘 느낄 수 있는 산책 코스입니다.',
+      museum: '야외 시간을 보낸 뒤 차분하게 이어가기 좋은 문화 코스입니다.',
+      food: '날씨 좋은 날의 여유로운 간식으로 잘 어울립니다.',
+    },
   },
   snow: {
-    title: '눈 오는 덴마크',
-    tone: 'Soft light, slow steps, warm hands.',
-    categories: ['cafe', 'museum', 'food', 'shop'],
+    title: '눈 오는 날의 실제 장소 추천',
+    tone: 'Keep it warm, quiet, and easy to reach.',
+    reason: {
+      cafe: '눈 오는 날 몸을 녹이며 머물기 좋은 따뜻한 공간입니다.',
+      shop: '추위를 피해 실내에서 시간을 보내기 좋습니다.',
+      walk: '눈이 잦아든 뒤 짧고 조용하게 풍경을 보기 좋습니다.',
+      museum: '추운 날 실내에서 깊게 머물기 좋은 코스입니다.',
+      food: '차가운 날씨에 잘 맞는 달콤하고 따뜻한 선택입니다.',
+    },
   },
   clouds: {
-    title: '흐린 날의 균형',
-    tone: 'A gentle plan works best.',
-    categories: ['cafe', 'shop', 'walk', 'food'],
+    title: '흐린 날의 실제 장소 추천',
+    tone: 'A gentle plan with a little bit of everything.',
+    reason: {
+      cafe: '흐린 날에는 차분한 카페에서 하루를 시작하기 좋습니다.',
+      shop: '햇빛이 적은 날에도 부담 없이 둘러보기 좋은 실내 코스입니다.',
+      walk: '구름 낀 날의 부드러운 빛 아래 짧게 걷기 좋습니다.',
+      museum: '날씨가 애매할 때 안정적으로 즐길 수 있는 문화 코스입니다.',
+      food: '흐린 오후에 작은 휘게 시간을 만들어줍니다.',
+    },
+  },
+  cold: {
+    title: '추운 날의 실제 장소 추천',
+    tone: 'Choose warmth first, then choose the view.',
+    reason: {
+      cafe: '추운 날 따뜻한 음료와 함께 쉬어가기 좋습니다.',
+      shop: '바깥 이동을 줄이고 실내에서 머물기 좋습니다.',
+      walk: '짧게 걸으며 겨울 공기를 느끼기에 좋은 코스입니다.',
+      museum: '따뜻한 실내에서 관광을 이어가기 좋습니다.',
+      food: '낮은 기온에 어울리는 포근한 간식입니다.',
+    },
   },
   hot: {
-    title: '따뜻한 북유럽 햇살',
-    tone: 'Keep it bright, breezy, and close to the water.',
-    categories: ['walk', 'cafe', 'shop', 'food'],
+    title: '따뜻한 날의 실제 장소 추천',
+    tone: 'Stay near open air, water, and cold drinks.',
+    reason: {
+      cafe: '더운 날 잠시 쉬며 시원한 음료를 마시기 좋습니다.',
+      shop: '햇볕이 강할 때 실내에서 쉬어가기 좋습니다.',
+      walk: '따뜻한 날 바람을 느끼며 걷기 좋은 코스입니다.',
+      museum: '야외 활동 사이에 시원하게 들르기 좋은 장소입니다.',
+      food: '따뜻한 날씨에 가볍게 즐기기 좋은 조합입니다.',
+    },
   },
 };
 
@@ -264,17 +297,26 @@ function getRecommendationKind(weather) {
 }
 
 function getRecommendations(weatherData, selectedCity) {
+  if (!weatherData) {
+    return {
+      title: 'Today’s plan',
+      tone: '',
+      emptyMessage: '날씨 정보를 불러온 후 추천이 표시됩니다.',
+      items: [],
+    };
+  }
+
   const cityPlaces = CITY_PLACES[selectedCity] ?? CITY_PLACES.Copenhagen;
   const kind = getRecommendationKind(weatherData);
-  const profile = WEATHER_PROFILES[kind] ?? WEATHER_PROFILES.clouds;
-  const items = profile.categories.map((category) => {
+  const copy = WEATHER_COPY[kind] ?? WEATHER_COPY.clouds;
+  const items = PLACE_CATEGORY_ORDER.map((category) => {
     const place = cityPlaces[category];
     return {
       category,
       categoryLabel: CATEGORY_LABELS[category],
       icon: CATEGORY_ICONS[category],
       title: place.name,
-      text: place.description,
+      text: `${place.description} ${copy.reason[category]}`,
     };
   });
 
@@ -289,8 +331,9 @@ function getRecommendations(weatherData, selectedCity) {
   }
 
   return {
-    title: profile.title,
-    tone: profile.tone,
+    title: copy.title,
+    tone: copy.tone,
+    emptyMessage: '',
     items,
   };
 }
@@ -480,9 +523,13 @@ export default function App() {
             </div>
 
             <div className="mt-6 grid gap-4">
-              {recommendations.items.map((item) => (
-                <RecommendationCard key={`${item.category}-${item.title}`} item={item} />
-              ))}
+              {recommendations.emptyMessage ? (
+                <p className="empty-recommendation">{recommendations.emptyMessage}</p>
+              ) : (
+                recommendations.items.map((item) => (
+                  <RecommendationCard key={`${item.category}-${item.title}`} item={item} />
+                ))
+              )}
             </div>
           </section>
         </section>
