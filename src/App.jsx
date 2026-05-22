@@ -1,21 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Bike,
-  BookOpen,
   Building2,
   CloudRain,
   Coffee,
   Compass,
   Droplets,
-  IceCreamBowl,
   LoaderCircle,
   MapPin,
   Soup,
   Sun,
   Thermometer,
-  Trees,
   Umbrella,
-  Waves,
   Wind,
 } from 'lucide-react';
 
@@ -37,76 +32,194 @@ const HYGGE_LINES = [
   'Make room for one simple pleasure before the day ends.',
 ];
 
-const RECOMMENDATION_SETS = {
+const CITY_PLACES = {
+  Copenhagen: {
+    cafe: {
+      name: 'Democratic Coffee',
+      description: 'A beloved central Copenhagen cafe known for coffee and almond croissants.',
+    },
+    shop: {
+      name: 'Illums Bolighus',
+      description: 'A classic Danish design store for furniture, lighting, and home objects.',
+    },
+    walk: {
+      name: 'Nyhavn',
+      description: 'Colorful harbor houses, canal views, and an easy Copenhagen stroll.',
+    },
+    museum: {
+      name: 'Designmuseum Denmark',
+      description: 'A calm museum for Danish design, craft, furniture, and visual culture.',
+    },
+    food: {
+      name: 'Kanelsnegl and latte',
+      description: 'A sweet cinnamon pastry with a warm latte for a proper hygge pause.',
+    },
+  },
+  Aarhus: {
+    cafe: {
+      name: 'La Cabra Coffee',
+      description: 'A specialty coffee spot with bright roasts and a relaxed Aarhus rhythm.',
+    },
+    shop: {
+      name: 'Salling',
+      description: 'A central department store with shopping, food, and city views nearby.',
+    },
+    walk: {
+      name: 'Latin Quarter',
+      description: 'A charming old neighborhood with small streets, shops, and cafes.',
+    },
+    museum: {
+      name: 'ARoS Aarhus Art Museum',
+      description: 'A landmark art museum famous for bold exhibitions and the rainbow panorama.',
+    },
+    food: {
+      name: 'Danish pastry and coffee',
+      description: 'A simple pairing that fits a slow morning or rainy afternoon.',
+    },
+  },
+  Odense: {
+    cafe: {
+      name: "Nelle's Coffee & Wine",
+      description: 'A cozy Odense cafe for coffee by day and an easy glass of wine later.',
+    },
+    shop: {
+      name: 'Brandts Klædefabrik',
+      description: 'A former textile factory district now filled with culture, shops, and cafes.',
+    },
+    walk: {
+      name: 'Munke Mose',
+      description: 'A green riverside park for a gentle walk close to the city center.',
+    },
+    museum: {
+      name: 'H.C. Andersen House',
+      description: 'An atmospheric museum exploring the world of Denmark’s famous storyteller.',
+    },
+    food: {
+      name: 'Hot chocolate and pastry',
+      description: 'A warm, sweet stop that suits Odense’s fairytale mood.',
+    },
+  },
+  Aalborg: {
+    cafe: {
+      name: 'Penny Lane Café',
+      description: 'A warm cafe and bakery with a homely Aalborg feel.',
+    },
+    shop: {
+      name: 'Friis Shoppingcenter',
+      description: 'A convenient indoor shopping center near Aalborg’s central streets.',
+    },
+    walk: {
+      name: 'Aalborg Waterfront',
+      description: 'A modern harborfront walk with open views across the Limfjord.',
+    },
+    museum: {
+      name: 'Kunsten Museum of Modern Art Aalborg',
+      description: 'A striking modern art museum with architecture worth lingering over.',
+    },
+    food: {
+      name: 'Warm soup and bread',
+      description: 'A comforting choice after a windy walk along the waterfront.',
+    },
+  },
+  Roskilde: {
+    cafe: {
+      name: 'Kaffekilden',
+      description: 'A friendly coffee stop for a slower Roskilde morning.',
+    },
+    shop: {
+      name: "RO's Torv",
+      description: 'A practical shopping center with plenty of indoor options.',
+    },
+    walk: {
+      name: 'Roskilde Harbour',
+      description: 'A peaceful harbor area with fjord air and maritime views.',
+    },
+    museum: {
+      name: 'Viking Ship Museum',
+      description: 'A waterfront museum where Viking history meets boatbuilding craft.',
+    },
+    food: {
+      name: 'Coffee and cinnamon roll',
+      description: 'A classic cozy pairing before or after a harbor walk.',
+    },
+  },
+  Lyngby: {
+    cafe: {
+      name: 'Café Mig og Annie',
+      description: 'A relaxed local cafe for coffee, brunch, and an unhurried break.',
+    },
+    shop: {
+      name: 'Lyngby Storcenter',
+      description: 'A large indoor shopping center with easy access from central Lyngby.',
+    },
+    walk: {
+      name: 'Lyngby Lake',
+      description: 'A scenic lakeside walk with quiet water, trees, and fresh air.',
+    },
+    museum: {
+      name: 'Frilandsmuseet',
+      description: 'An open-air museum of historic Danish homes and rural life.',
+    },
+    food: {
+      name: 'Latte and bakery',
+      description: 'A soft cafe pairing for a calm Lyngby afternoon.',
+    },
+  },
+};
+
+const CATEGORY_LABELS = {
+  cafe: 'Cafe',
+  shop: 'Shop',
+  walk: 'Walk',
+  museum: 'Museum',
+  food: 'Food',
+  tip: 'Wind tip',
+};
+
+const CATEGORY_ICONS = {
+  cafe: Coffee,
+  shop: Building2,
+  walk: MapPin,
+  museum: Building2,
+  food: Soup,
+  tip: Compass,
+};
+
+const WEATHER_PROFILES = {
   rain: {
     title: '비 오는 날의 휘게',
     tone: 'Stay dry, warm, and unhurried.',
-    items: [
-      { icon: Coffee, title: '실내 카페', text: '창가 자리에 앉아 커피와 시나몬 번을 즐겨보세요.' },
-      { icon: Building2, title: '디자인 뮤지엄', text: 'Designmuseum Denmark처럼 비 오는 날 오래 머물기 좋은 공간을 추천해요.' },
-      { icon: Coffee, title: '따뜻한 라떼', text: '우산을 접고 들어가 따뜻한 라떼 한 잔으로 속도를 낮춰보세요.' },
-    ],
-    food: { icon: Coffee, title: '오늘의 음식', text: '따뜻한 라떼와 시나몬 번' },
+    categories: ['cafe', 'museum', 'shop', 'food'],
   },
   clear: {
     title: '햇살 좋은 하루',
     tone: 'Go outside while the light is kind.',
-    items: [
-      { icon: Waves, title: 'Nyhavn 산책', text: '항구의 색감과 물가 바람을 천천히 즐겨보세요.' },
-      { icon: Bike, title: '자전거 라이딩', text: '도시의 자전거 길을 따라 가볍게 움직이기 좋습니다.' },
-      { icon: Trees, title: '공원 피크닉', text: 'King’s Garden이나 Frederiksberg Have에서 여유를 만들어보세요.' },
-    ],
-    food: { icon: Coffee, title: '오늘의 음식', text: '오픈 샌드위치와 아이스 커피' },
+    categories: ['walk', 'cafe', 'shop', 'food'],
   },
   cold: {
     title: '추운 날의 온기',
     tone: 'Choose warmth first, then choose the view.',
-    items: [
-      { icon: Coffee, title: '따뜻한 음료', text: '핫초코나 라떼처럼 손을 데울 수 있는 음료로 시작하세요.' },
-      { icon: Building2, title: '실내 관광', text: '추운 날에는 전시, 성 내부 투어, 디자인 공간처럼 실내 코스가 좋습니다.' },
-      { icon: BookOpen, title: '조용한 카페', text: '긴 코트 그대로 들어가 천천히 머물 수 있는 곳을 골라보세요.' },
-    ],
-    food: { icon: Soup, title: '오늘의 음식', text: '크리미한 감자 수프' },
+    categories: ['cafe', 'museum', 'food', 'shop'],
   },
   wind: {
     title: '바람 강한 날',
     tone: 'Keep the plan close and comfortable.',
-    items: [
-      { icon: Compass, title: '대중교통 추천', text: '풍속이 강한 날은 자전거보다 지하철이나 버스로 이동해보세요.' },
-      { icon: Building2, title: '실내 활동', text: '야외 일정을 줄이고 전시, 영화관, 실내 카페 위주로 계획하세요.' },
-      { icon: Coffee, title: '가까운 카페', text: '긴 이동보다 숙소나 역 근처의 따뜻한 공간이 잘 어울립니다.' },
-    ],
-    food: { icon: Soup, title: '오늘의 음식', text: '따뜻한 스튜와 허브티' },
+    categories: ['cafe', 'museum', 'shop', 'food'],
   },
   snow: {
     title: '눈 오는 덴마크',
     tone: 'Soft light, slow steps, warm hands.',
-    items: [
-      { icon: BookOpen, title: '실내 서점', text: '눈 오는 날에는 책방에서 천천히 머무는 시간이 잘 어울립니다.' },
-      { icon: Coffee, title: '핫초코', text: '진한 핫초코로 손끝부터 따뜻하게 녹여보세요.' },
-      { icon: Building2, title: '조용한 카페', text: '낮은 조명과 편안한 좌석이 있는 카페를 추천해요.' },
-    ],
-    food: { icon: Coffee, title: '오늘의 음식', text: '핫초코와 버터 쿠키' },
+    categories: ['cafe', 'museum', 'food', 'shop'],
   },
   clouds: {
     title: '흐린 날의 균형',
     tone: 'A gentle plan works best.',
-    items: [
-      { icon: Coffee, title: '브런치 카페', text: '느긋한 식사와 커피로 하루의 속도를 낮춰보세요.' },
-      { icon: Building2, title: '디자인 숍', text: '덴마크 디자인 소품을 구경하기 좋은 날입니다.' },
-      { icon: Trees, title: '짧은 공원 산책', text: '비가 오기 전 가까운 녹지에서 숨을 돌려보세요.' },
-    ],
-    food: { icon: Coffee, title: '오늘의 음식', text: '카넬스네일과 라떼' },
+    categories: ['cafe', 'shop', 'walk', 'food'],
   },
   hot: {
     title: '따뜻한 북유럽 햇살',
     tone: 'Keep it bright, breezy, and close to the water.',
-    items: [
-      { icon: Waves, title: '항구 산책', text: '물가를 따라 걸으며 덴마크의 긴 낮을 느껴보세요.' },
-      { icon: IceCreamBowl, title: '아이스커피', text: '카페 테라스에서 차가운 커피 한 잔을 곁들이기 좋은 날입니다.' },
-      { icon: Trees, title: '야외 피크닉', text: '그늘이 있는 공원에서 가볍게 쉬어가세요.' },
-    ],
-    food: { icon: Coffee, title: '오늘의 음식', text: '아이스커피와 오픈 샌드위치' },
+    categories: ['walk', 'cafe', 'shop', 'food'],
   },
 };
 
@@ -136,6 +249,50 @@ function getBackground(kind) {
     clouds: 'from-[#d9ddd4] via-[#f1eee7] to-[#cad3d4]',
   };
   return backgrounds[kind] ?? backgrounds.clouds;
+}
+
+function getRecommendationKind(weather) {
+  const main = weather?.weather?.[0]?.main?.toLowerCase() ?? '';
+  const temp = weather?.main?.temp;
+
+  if (main.includes('snow')) return 'snow';
+  if (main.includes('rain') || main.includes('drizzle') || main.includes('thunderstorm')) return 'rain';
+  if (temp <= 5) return 'cold';
+  if (temp >= 23) return 'hot';
+  if (main.includes('clear')) return 'clear';
+  return 'clouds';
+}
+
+function getRecommendations(weatherData, selectedCity) {
+  const cityPlaces = CITY_PLACES[selectedCity] ?? CITY_PLACES.Copenhagen;
+  const kind = getRecommendationKind(weatherData);
+  const profile = WEATHER_PROFILES[kind] ?? WEATHER_PROFILES.clouds;
+  const items = profile.categories.map((category) => {
+    const place = cityPlaces[category];
+    return {
+      category,
+      categoryLabel: CATEGORY_LABELS[category],
+      icon: CATEGORY_ICONS[category],
+      title: place.name,
+      text: place.description,
+    };
+  });
+
+  if ((weatherData?.wind?.speed ?? 0) >= 8) {
+    items.push({
+      category: 'tip',
+      categoryLabel: CATEGORY_LABELS.tip,
+      icon: CATEGORY_ICONS.tip,
+      title: '자전거보다 대중교통을 추천합니다.',
+      text: 'Wind tip: 자전거보다 대중교통을 추천합니다.',
+    });
+  }
+
+  return {
+    title: profile.title,
+    tone: profile.tone,
+    items,
+  };
 }
 
 function formatWeatherError(error) {
@@ -181,11 +338,12 @@ function Stat({ icon: Icon, label, value }) {
 function RecommendationCard({ item }) {
   const Icon = item.icon;
   return (
-    <article className="recommendation-card">
-      <div className="icon-badge">
+    <article className={item.category === 'tip' ? 'recommendation-card tip-card' : 'recommendation-card'}>
+      <div className={item.category === 'tip' ? 'icon-badge dark' : 'icon-badge'}>
         <Icon className="h-5 w-5" aria-hidden="true" />
       </div>
       <div>
+        <span className="category-label">{item.categoryLabel}</span>
         <h3>{item.title}</h3>
         <p>{item.text}</p>
       </div>
@@ -232,8 +390,7 @@ export default function App() {
   }, [selectedCity]);
 
   const kind = getWeatherKind(weather);
-  const recommendations = RECOMMENDATION_SETS[kind];
-  const FoodIcon = recommendations.food.icon;
+  const recommendations = getRecommendations(weather, selectedCity);
   const hyggeLine = useMemo(() => {
     const cityIndex = CITIES.findIndex((city) => city.name === selectedCity);
     return HYGGE_LINES[Math.max(cityIndex, 0) % HYGGE_LINES.length];
@@ -324,19 +481,9 @@ export default function App() {
 
             <div className="mt-6 grid gap-4">
               {recommendations.items.map((item) => (
-                <RecommendationCard key={item.title} item={item} />
+                <RecommendationCard key={`${item.category}-${item.title}`} item={item} />
               ))}
             </div>
-
-            <article className="food-card">
-              <div className="icon-badge dark">
-                <FoodIcon className="h-5 w-5" aria-hidden="true" />
-              </div>
-              <div>
-                <h3>{recommendations.food.title}</h3>
-                <p>{recommendations.food.text}</p>
-              </div>
-            </article>
           </section>
         </section>
       </div>

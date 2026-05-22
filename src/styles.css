@@ -138,6 +138,7 @@ select {
   color: rgb(15 23 42);
   font-size: 1.05rem;
   font-weight: 700;
+  margin-top: 0.18rem;
 }
 
 .recommendation-card p,
@@ -155,6 +156,26 @@ select {
 
 .food-card h3,
 .food-card p {
+  color: white;
+}
+
+.category-label {
+  color: rgb(71 85 105);
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.tip-card {
+  background: rgb(15 23 42);
+  border-color: rgb(15 23 42);
+}
+
+.tip-card .category-label,
+.tip-card h3,
+.tip-card p {
   color: white;
 }
 
